@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Payment{% endblock %}
+
+{% block content %}
+<head>
+    <title>Payment</title>
+    <style>
+        .ticket-container {
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Payment Details</h1>
+    <ul>
+        <li><strong>Bus Number:</strong> {{ request.form.get('busNumber') }}</li>
+        <li><strong>Source:</strong> {{ request.form.get('source') }}</li>
+        <li><strong>Destination:</strong> {{ request.form.get('destination') }}</li>
+        <li><strong>Stops:</strong> {{ request.form.get('stops') }}</li>
+        <li><strong>Fare:</strong> {{ request.form.get('fare') }} &#8377;</li>
+    </ul>
+    
+    <!-- Generate Ticket Button -->
+    <form action="/generate_ticket" method="POST">
+        <input type="hidden" name="busNumber" value="{{ request.form.get('busNumber') }}">
+        <input type="hidden" name="source" value="{{ request.form.get('source') }}">
+        <input type="hidden" name="destination" value="{{ request.form.get('destination') }}">
+        <input type="hidden" name="stops" value="{{ request.form.get('stops') }}">
+        <input type="hidden" name="fare" value="{{ request.form.get('fare') }}">
+        <button type="submit">Generate Ticket</button>
+    </form>
+</body>
+{% endblock %}

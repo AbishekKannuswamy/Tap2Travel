@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}user{% endblock %}
+
+{% block content %}
+<head>
+    <title>Bus Route</title>
+    <style>
+        .bus-info {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: auto;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        .fare-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .fare-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .make-payment-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .make-payment-button:hover {
+            background-color: #45a049;
+        }
+        .bus-info li {
+            margin-bottom: 10px;
+        }
+        .bus-info strong {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+        .select-container {
+            margin-top: 10px;
+        }
+        .select-container select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .button-container button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .button-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Bus Route</h1>
+    <ul class="bus-info">
+        <li>
+            <strong>Bus Number:</strong> {{ bus_route.busNumber }}
+        </li>
+        
+        <li>
+            <strong>Source:</strong> {{ bus_route.source }}
+        </li>
+        <li>
+            <strong>Destination:</strong> {{ bus_route.destination }}
+        </li>
+        <li class="select-container">
+            <strong>Stops:</strong>
+            <select id="stops" name="stops">
+                {% for stop in bus_route.stops.split(',') %}
+                    <option value="{{ stop }}">{{ stop }}</option>
+                {% endfor %}
+            </select>
+        </li>
+    </ul>
+  <div class="button-container">
+        <button type="button" id="generate-fare">Generate Fare</button>
+    </div>
+
+    <div class="fare-container" style="display:none;">
+        <form action="/payment" method="POST" >
+            <h2>Fare: <span id="fare-amount">&#8377; <span class="fare-amount"></span></span></h2>
+            <input type="hidden" name="fare" id="fare" value="">
+            <input type="hidden" name="busNumber" value="{{ bus_route.busNumber }}">
+            <input type="hidden" name="source" value="{{ bus_route.source }}">
+            <input type="hidden" name="destination" value="{{ bus_route.destination }}">
+            <input type="hidden" name="stops" id="selected-stop" value="">
+            <button type="submit" class="make-payment-button">Make Payment</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('generate-fare').addEventListener('click', function() {
+            var stopsDropdown = document.getElementById('stops');
+            var selectedStopIndex = stopsDropdown.selectedIndex;
+            var fare = (selectedStopIndex + 1) * 2; // Fare calculation
+    
+            // Display fare and update hidden input value
+            document.querySelector('.fare-amount').textContent = fare;
+            document.getElementById('fare').value = fare;
+    
+            // Update selected stop value
+            var selectedStop = stopsDropdown.options[selectedStopIndex].text;
+            document.getElementById('selected-stop').value = selectedStop;
+    
+            document.querySelector('.fare-container').style.display = 'block';
+        });
+    </script>
+    
+</body>
+{% endblock %}

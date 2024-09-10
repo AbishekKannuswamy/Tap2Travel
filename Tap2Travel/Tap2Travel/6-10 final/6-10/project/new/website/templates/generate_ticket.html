@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Ticket{% endblock %}
+
+{% block content %}
+<head>
+    <title>Ticket</title>
+    <style>
+        .ticket-container {
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <br><br><br>
+    <div class="ticket-container">
+        <h1>Ticket</h1>
+        <ul>
+            <li><strong>Bus Number:</strong> {{ busNumber }}</li>
+            <li><strong>Source:</strong> {{ source }}</li>
+            <li><strong>Destination:</strong> {{ destination }}</li>
+            <li><strong>Stops:</strong> {{ stops }}</li>
+            <li><strong>Fare:</strong> {{ fare }} &#8377;</li>
+            <li><strong>Date:</strong> {{ date }}</li>
+            <li><strong>Time:</strong> {{ time }}</li>
+        </ul>
+    </div>
+</body>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1 align="center">Welcome {{user.first_name}}</h1>
+
+<div style="text-align: center;"><br>
+    <h5>QR Code Scanner Module</h5>
+    <span><br><br>
+        <button id="startScan">Scan QR</button>
+    </span>
+    <div id="cameraPreview" style="display: none; text-align: center;">
+        <video id="video" playsinline autoplay></video>
+        <canvas id="canvas" style="display: none;"></canvas>
+    </div>
+</div>
+
+<div id="result" style="display: none;">
+    <h2>Scanned QR Code:</h2>
+    <p id="qrCodeDataResult"></p>
+    <form id="qrCodeForm" method="POST" action='/open_qr'>
+        <input type="hidden" name="data" id="qrCodeDataInput" value="">
+       
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.0.0/dist/jsQR.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const startScanButton = document.getElementById('startScan');
+        const cameraPreview = document.getElementById('cameraPreview');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const resultDiv = document.getElementById('result');
+        const qrCodeData = document.getElementById('qrCodeDataResult');
+        const qrCodeDataInput = document.getElementById('qrCodeDataInput');
+        let stream;
+
+        startScanButton.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                cameraPreview.style.display = 'block';
+                startScanButton.style.display = 'none';
+
+                video.addEventListener('loadedmetadata', () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                });
+
+                const scanQRCode = () => {
+                    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                    if (code) {
+                        const scannedData = code.data; // Actual scanned data
+                        qrCodeData.textContent = scannedData;
+                        qrCodeDataInput.value = scannedData; // Set the value of the hidden input
+                        resultDiv.style.display = 'block';
+                        cameraPreview.style.display = 'none';
+
+                        // Submit the form after scanning
+                        document.getElementById('qrCodeForm').submit();
+
+                        // Stop scanning
+                        stopScan();
+                    } else {
+                        requestAnimationFrame(scanQRCode);
+                    }
+                };
+
+                requestAnimationFrame(scanQRCode);
+            } catch (error) {
+                console.error('Error accessing the camera: ', error);
+            }
+        });
+
+        function stopScan() {
+            if (stream) {
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+            }
+        }
+    });
+</script>
+
+<style>
+    /* CSS for mobile devices */
+    @media (max-width: 768px) {
+        #cameraPreview {
+            width: 100%; /* Set the width to 100% for mobile devices */
+            max-width: none;
+        }
+    }
+</style>
+{% endblock %}
